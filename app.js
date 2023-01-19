@@ -1,7 +1,7 @@
 //const { inquirerMenu } = require('./helpers/inquirer');
 import colors from 'colors';
 import { guardarDB, leerDB } from './helpers/guardarArchivo.js';
-import { inquirerMenu, pausa, leerInput } from './helpers/inquirer.js'
+import { inquirerMenu, pausa, leerInput, listadoTareasBorrar, confirmar, mostrarListadoChecklist } from './helpers/inquirer.js'
 
 import {Tareas} from './models/tareas.js';
 
@@ -34,8 +34,27 @@ const main = async () => {
         case '2':
            tareas.listadoCompleto();
             break;
-        case value:
+        case '3':
+            tareas.listadasPendientesCompletadas(true);
             
+            break;
+        case '4':
+            tareas.listadasPendientesCompletadas(false);
+            break;
+        case '5': //completado | pendiente
+            const ids= await mostrarListadoChecklist( tareas.listadoArr );
+            tareas.toggleCompletadas( ids );
+            break;
+
+        case '6': //listado borrar
+            const id = await listadoTareasBorrar( tareas.listadoArr );  //envía el arr de tareas a la función y retorna ID
+            if (id !== '0'){
+                const ok = await confirmar('¿estás seguro?'); //msg de confirmación inquirer
+                if( ok ){
+                    tareas.borrarTarea( id ); //borra tarea
+                    console.log('tarea borrada correctamente'.bgBlue);
+                }
+            }
             break;
        }
 
@@ -45,7 +64,7 @@ const main = async () => {
 
     } while (opt !== '0');
 
-    
+
 }
 
 main();

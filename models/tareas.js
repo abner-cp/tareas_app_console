@@ -19,6 +19,13 @@ class Tareas {
         this._listado= {};
     }
 
+    borrarTarea( id= '' ) { //borrar tarea del objeto ls
+
+        if( this._listado[id] ){
+            delete this._listado[id];
+        }
+    }
+
     cargarTareasFromArray( tareas = []) {
 
         tareas.forEach( tarea => {
@@ -43,6 +50,48 @@ class Tareas {
             console.log( `${ idx } ${ desc } :: ${ estado }`); //imprime el listado
         });
 
+    }
+
+    listadasPendientesCompletadas( completadas= true ){ //LS de tareas completadas (true) o pendientes (false)
+        
+        let contador =0; //indice
+        console.log();
+
+        this.listadoArr.forEach( tarea =>{ 
+
+            const { desc, completadoEn }= tarea; // se desestructura desde tarea (ciclo)
+            const estado = ( completadoEn ) //ternario
+                    ? 'Completada'.green 
+                    : 'Pendiente'.red;
+                if(completadas) { //necesita mostrar las completadas
+                    if(completadoEn) { //el campo contiene algo
+                        contador +=1;
+                        console.log( `${ (contador + '.').green} ${ desc } :: ${ completadoEn.green }`); //imprime el listado
+                    }
+                } 
+                else { //las pendientes
+                    if( !completadoEn ) { //false =pendientes
+                        contador+=1;
+                        console.log( `${( contador + '.').green} ${ desc } :: ${ estado }`); //imprime el listado
+                    }
+                }
+        });
+    }
+
+    toggleCompletadas( ids = [] ) {
+
+        ids.forEach( id => {
+            const tarea = this._listado[id];
+            if ( !tarea.completadoEn ){
+                tarea.completadoEn = new Date().toISOString();
+            }
+        });
+
+        this.listadoArr.forEach( tarea => { // revertir completadas | pendientes
+            if( !ids.includes( tarea.id ) ){
+                this._listado[tarea.id].completadoEn= null; 
+            }
+        });
     }
 
 }
